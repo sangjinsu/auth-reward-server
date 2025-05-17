@@ -5,7 +5,12 @@
     "start:dev:event": "nest start event --watch",
     "start:gateway": "nest start gateway",
     "start:auth": "nest start auth",
-    "start:event": "nest start event"
+    "start:event": "nest start event",
+    "prebuild": "rimraf dist",
+    "build": "nest build gateway && nest build auth && nest build event",
+    "start:gateway:prod": "node dist/apps/gateway/main.js",
+    "start:auth:prod": "node dist/apps/auth/main.js",
+    "start:event:prod": "node dist/apps/event/main.js"
   },
   "dependencies": {
     "@nestjs/config": "^4.0.2",
