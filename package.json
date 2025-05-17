@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "start:dev:gateway": "nest start gateway --watch",
+    "start:dev:auth": "nest start auth --watch",
+    "start:dev:event": "nest start event --watch",
+    "start:gateway": "nest start gateway",
+    "start:auth": "nest start auth",
+    "start:event": "nest start event"
+  },
+  "dependencies": {
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/microservices": "^11.1.1",
+    "@nestjs/mongoose": "^11.0.3",
+    "@nestjs/platform-express": "^11.1.1",
+    "@nestjs/swagger": "^11.2.0",
+    "bcrypt": "^6.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "mongoose": "^8.15.0",
+    "passport-jwt": "^4.0.1",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
