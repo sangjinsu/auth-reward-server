@@ -12,15 +12,17 @@ export class EventService {
 
     constructor(
         @InjectModel(EventSetting.name) private eventModel: Model<EventSettingDocument>,
+
     ) {
     }
 
     async createEvent(dto: CreateEventDto) {
+
         const created = await this.eventModel.create({
             ...dto,
             startDate: new Date(dto.startDate),
             endDate: new Date(dto.endDate),
-            createdBy: new Types.ObjectId(dto.createdBy),
+            createdBy: new Types.ObjectId(dto.userId),
         });
 
         return {

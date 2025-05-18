@@ -1,14 +1,14 @@
 import {Body, Controller, Delete, Get, Inject, Param, Patch, Post, UseGuards} from '@nestjs/common';
 import {JwtAuthGuard} from "./guards/jwt-auth.guard";
-import {RolesGuard} from "./guards/roles.guard";
-import {Roles} from "./decorators/roles.decorator";
-import {ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {CreateRewardTypeDto} from "./dto/reward/create-reward-type.dto";
 import {lastValueFrom} from "rxjs";
 import {UpdateRewardTypeDto} from "./dto/reward/update-reward-type.dto";
 import {ClientProxy} from "@nestjs/microservices";
+import {RolesGuardFactory} from "./guards/roles.guard";
 
 @ApiTags('RewardType')
+@ApiBearerAuth()
 @Controller('reward-type')
 export class RewardTypeController {
 
@@ -19,8 +19,7 @@ export class RewardTypeController {
 
 
     @Post()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('ADMIN')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['ADMIN']))
     @ApiOperation({summary: '보상 타입 등록 (ADMIN 전용)'})
     @ApiBody({
         type: CreateRewardTypeDto,
@@ -69,7 +68,7 @@ export class RewardTypeController {
 
     @Get(':id')
     @ApiOperation({summary: 'RewardType 단일 조회'})
-    @ApiParam({name: 'id', description: 'RewardType ObjectId'})
+    @ApiParam({name: 'id', description: 'RewardType Type'})
     @ApiResponse({
         status: 200,
         description: 'RewardType 정보 반환',
@@ -91,10 +90,9 @@ export class RewardTypeController {
 
 
     @Patch(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('ADMIN')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['ADMIN']))
     @ApiOperation({summary: 'RewardType 수정 (ADMIN 전용)'})
-    @ApiParam({name: 'id', description: 'RewardType ObjectId'})
+    @ApiParam({name: 'id', description: 'RewardType Type'})
     @ApiBody({
         type: UpdateRewardTypeDto,
         examples: {
@@ -120,8 +118,7 @@ export class RewardTypeController {
 
 
     @Delete(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('ADMIN')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['ADMIN']))
     @ApiOperation({summary: 'RewardType 삭제 (ADMIN 전용)'})
     @ApiParam({name: 'id', description: 'RewardType ObjectId'})
     @ApiResponse({

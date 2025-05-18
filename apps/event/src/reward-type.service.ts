@@ -28,18 +28,22 @@ export class RewardTypeService {
         return this.rewardTypeModel.find().sort({ type: 1 }).lean();
     }
 
-    async findById(id: string) {
-        const rewardType = await this.rewardTypeModel.findById(id).lean();
+    async findByRewardType(type: string) {
+        const rewardType = await this.rewardTypeModel.findOne(
+            { type: type}
+        )
         if (!rewardType) {
             throw new NotFoundException('RewardType을 찾을 수 없습니다.');
         }
         return rewardType;
     }
 
-    async updateById(id: string, dto: UpdateRewardTypeDto) {
-        const updated = await this.rewardTypeModel.findByIdAndUpdate(id, dto, {
-            new: true,
-        });
+    async updateById(type: string, dto: UpdateRewardTypeDto) {
+        const updated = await this.rewardTypeModel.findOneAndUpdate(
+            { type: type },
+            dto,
+            { new: true }
+        );
 
         if (!updated) {
             throw new NotFoundException('RewardType을 찾을 수 없습니다.');
@@ -51,8 +55,10 @@ export class RewardTypeService {
         };
     }
 
-    async deleteById(id: string) {
-        const deleted = await this.rewardTypeModel.findByIdAndDelete(id);
+    async deleteById(rewardType: string) {
+        const deleted = await this.rewardTypeModel.findOneAndDelete(
+            { type: rewardType }
+        )
 
         if (!deleted) {
             throw new NotFoundException('RewardType을 찾을 수 없습니다.');
@@ -60,7 +66,7 @@ export class RewardTypeService {
 
         return {
             message: 'RewardType이 성공적으로 삭제되었습니다.',
-            id: deleted._id,
+            id: deleted.type,
         };
     }
 

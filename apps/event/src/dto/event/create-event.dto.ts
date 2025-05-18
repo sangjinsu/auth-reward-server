@@ -29,5 +29,5 @@ export class CreateEventDto {
     status: 'Active' | 'NonActive';
 
     @IsString()
-    createdBy: string;
+    userId: string;
 }

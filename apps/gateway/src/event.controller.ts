@@ -1,14 +1,12 @@
 import {
     Body,
     Controller, Delete, Get, Param, Patch,
-    Post, Query,
+    Post, Query, Req,
     UseGuards,
 } from '@nestjs/common';
 import {ClientProxy} from '@nestjs/microservices';
 import {Inject} from '@nestjs/common';
 import {JwtAuthGuard} from './guards/jwt-auth.guard';
-import {RolesGuard} from './guards/roles.guard';
-import {Roles} from './decorators/roles.decorator';
 import {CreateEventDto} from './dto/event/create-event.dto';
 import {lastValueFrom} from 'rxjs';
 import {
@@ -22,6 +20,8 @@ import {FindEventQueryDto} from "./dto/event/find-event.query.dto";
 import {UpdateEventDto} from "./dto/event/update-event.dto";
 import {CreateRewardTypeDto} from "./dto/reward/create-reward-type.dto";
 import {UpdateRewardTypeDto} from "./dto/reward/update-reward-type.dto";
+import {RolesGuardFactory} from "./guards/roles.guard";
+import {Request} from "express";
 
 @ApiTags('Event')
 @ApiBearerAuth()
@@ -33,8 +33,7 @@ export class EventController {
     }
 
     @Post()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('OPERATOR', 'ADMIN')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['OPERATOR', 'ADMIN']))
     @ApiOperation({summary: '이벤트 등록 (OPERATOR, ADMIN)'})
     @ApiBody({
         type: CreateEventDto,
@@ -53,7 +52,6 @@ export class EventController {
                     startDate: '2025-05-20T00:00:00Z',
                     endDate: '2025-05-27T00:00:00Z',
                     status: 'Active',
-                    createdBy: '665123456789abcdef012345',
                 },
             },
         },
@@ -68,15 +66,20 @@ export class EventController {
             },
         },
     })
-    async createEvent(@Body() dto: CreateEventDto) {
-        const res = this.eventClient.send('event_create', dto);
+    async createEvent(
+        @Req () req: Request & { userId?: string },
+        @Body() dto: CreateEventDto
+    ) {
+        const res = this.eventClient.send('event_create', {
+            ...dto,
+            userId: req.userId,
+        });
         return await lastValueFrom(res);
     }
 
 
     @Get()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('OPERATOR', 'ADMIN')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['OPERATOR', 'ADMIN']))
     @ApiOperation({summary: '이벤트 목록 조회 (필터링 가능)'})
     @ApiQuery({name: 'type', required: false})
     @ApiQuery({name: 'status', required: false, enum: ['Active', 'NonActive']})
@@ -90,8 +93,7 @@ export class EventController {
 
 
     @Get(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('OPERATOR', 'ADMIN')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['OPERATOR', 'ADMIN']))
     @ApiOperation({summary: '이벤트 상세 조회'})
     @ApiParam({name: 'id', description: '이벤트 ID'})
     @ApiResponse({
@@ -104,8 +106,7 @@ export class EventController {
     }
 
     @Patch(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('OPERATOR', 'ADMIN')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['OPERATOR', 'ADMIN']))
     @ApiOperation({summary: '이벤트 수정'})
     @ApiParam({name: 'id', description: '이벤트 ID'})
     @ApiBody({
@@ -130,8 +131,7 @@ export class EventController {
     }
 
     @Delete(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('OPERATOR', 'ADMIN')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['OPERATOR', 'ADMIN']))
     @ApiOperation({summary: '이벤트 삭제 (OPERATOR, ADMIN)'})
     @ApiParam({name: 'id', description: '이벤트 ID'})
     @ApiResponse({
@@ -148,7 +148,6 @@ export class EventController {
         const res = this.eventClient.send('event_delete_by_id', id);
         return await lastValueFrom(res);
     }
-
 
 
 }

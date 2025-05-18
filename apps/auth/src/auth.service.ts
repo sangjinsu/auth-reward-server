@@ -4,14 +4,14 @@ import {User, UserDocument} from "./schemas/user.schema";
 import {Model} from "mongoose";
 import {RegisterUserDto} from "./dto/register-user.dto";
 import * as bcrypt from 'bcrypt';
-import {JwtService} from '@nestjs/jwt';
 import {LoginDto} from "./dto/login.dto";
+import {JwtService} from './jwt.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
-        private jwtService: JwtService
+        private readonly JwtService: JwtService,
     ) {
     }
 
@@ -48,18 +48,23 @@ export class AuthService {
             role: user.role,
         };
 
-        const token = this.jwtService.sign(payload);
+        const token = this.JwtService.sign(payload);
 
         return {
             access_token: token,
         };
     }
 
-    async updateUserRole(userId: string, newRole: string) {
+    async updateUserRole(userId: string, targetUserId: string, newRole: string) {
+
+        if (userId === targetUserId) {
+            throw new UnauthorizedException('Admin은 자신의 Role을 변경할 수 없습니다.');
+        }
+
         const updated = await this.userModel.findByIdAndUpdate(
-            userId,
-            { role: newRole },
-            { new: true },
+            targetUserId,
+            {role: newRole},
+            {new: true},
         );
 
         if (!updated) {
@@ -74,5 +79,14 @@ export class AuthService {
                 role: updated.role,
             },
         };
+    }
+
+    async validateToken(token: string) {
+        try {
+            const payload = await this.JwtService.verify(token);
+            return {valid: true, user: payload};
+        } catch {
+            return {valid: false};
+        }
     }
 }
