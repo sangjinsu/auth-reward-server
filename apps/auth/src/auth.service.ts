@@ -54,4 +54,25 @@ export class AuthService {
             access_token: token,
         };
     }
+
+    async updateUserRole(userId: string, newRole: string) {
+        const updated = await this.userModel.findByIdAndUpdate(
+            userId,
+            { role: newRole },
+            { new: true },
+        );
+
+        if (!updated) {
+            throw new Error('해당 사용자를 찾을 수 없습니다.');
+        }
+
+        return {
+            message: '역할이 성공적으로 변경되었습니다.',
+            user: {
+                id: updated._id,
+                email: updated.email,
+                role: updated.role,
+            },
+        };
+    }
 }

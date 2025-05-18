@@ -2,7 +2,7 @@ import {Module} from '@nestjs/common';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import {ClientsModule, Transport} from '@nestjs/microservices';
 import {GatewayController} from "./gateway.controller";
-import {GatewayAuthController} from "./gateway.auth.controller";
+import {AuthController} from "./auth.controller";
 
 @Module({
     imports: [
@@ -38,7 +38,7 @@ import {GatewayAuthController} from "./gateway.auth.controller";
     ],
     controllers: [
         GatewayController,
-        GatewayAuthController
+        AuthController
     ],
 })
 

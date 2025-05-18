@@ -1,16 +1,19 @@
 {
   "scripts": {
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "build": "npm run clean && nest build gateway && nest build auth && nest build event",
     "start:dev:gateway": "nest start gateway --watch",
     "start:dev:auth": "nest start auth --watch",
     "start:dev:event": "nest start event --watch",
     "start:gateway": "nest start gateway",
     "start:auth": "nest start auth",
     "start:event": "nest start event",
-    "build": "nest build gateway && nest build auth && nest build event",
     "start:gateway:prod": "node dist/apps/gateway/main.js",
     "start:auth:prod": "node dist/apps/auth/main.js",
     "start:event:prod": "node dist/apps/event/main.js"
-  },
+  }
+,
   "dependencies": {
     "@nestjs/common": "^10.4.17",
     "@nestjs/config": "^4.0.2",
@@ -26,5 +29,9 @@
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.2",
+    "rimraf": "^5.0.10"
   }
 }
