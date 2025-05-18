@@ -14,4 +14,3 @@ export class RewardType {
 
 export type RewardTypeDocument = RewardType & Document;
 export const RewardTypeSchema = SchemaFactory.createForClass(RewardType);
-RewardTypeSchema.index({ type: 1 }, { unique: true });
