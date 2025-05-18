@@ -1,8 +1,9 @@
 import {Module} from '@nestjs/common';
 import {EventController} from './event.controller';
-import {EventService} from './event.service';
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import {MongooseModule} from "@nestjs/mongoose";
+import {EventService} from "./event.service";
+import {EventSetting, EventSettingSchema} from "./schemas/event-setting.schema";
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import {MongooseModule} from "@nestjs/mongoose";
             }),
             inject: [ConfigService],
         }),
+        MongooseModule.forFeature([{name: EventSetting.name, schema: EventSettingSchema}]),
     ],
     controllers: [EventController],
     providers: [EventService],

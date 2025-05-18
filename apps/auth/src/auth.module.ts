@@ -5,6 +5,7 @@ import {MongooseModule} from "@nestjs/mongoose";
 import {User, UserSchema} from "./schemas/user.schema";
 import {JwtModule} from "@nestjs/jwt";
 import {AuthService} from "./auth.service";
+import {ClientsModule, Transport} from "@nestjs/microservices";
 
 @Module({
     controllers: [AuthController],
@@ -29,7 +30,6 @@ import {AuthService} from "./auth.service";
             inject: [ConfigService],
         }),
     ],
-
 })
 
 export class AuthModule {
