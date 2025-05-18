@@ -19,6 +19,7 @@ User {
 ```text
 Event {
   _id: ObjectId
+  type : number            // 고유 숫자 ID (예: 1, 2, 3)
   title: string
   condition: {
     type: string       // 예: 'attendance'
