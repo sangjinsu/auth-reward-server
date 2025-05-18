@@ -6,8 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(GatewayModule);
 
   const config = new DocumentBuilder()
-      .setTitle('Reward Gateway API')
-      .setDescription('유저 보상 및 이벤트 시스템 Gateway API 문서입니다.')
+      .setTitle('Gateway API')
+      .setDescription('MSA Gateway 서비스')
       .setVersion('1.0')
       .addBearerAuth()
       .build();
