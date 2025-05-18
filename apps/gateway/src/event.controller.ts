@@ -9,7 +9,7 @@ import {Inject} from '@nestjs/common';
 import {JwtAuthGuard} from './guards/jwt-auth.guard';
 import {RolesGuard} from './guards/roles.guard';
 import {Roles} from './decorators/roles.decorator';
-import {CreateEventDto} from './dto/create-event.dto';
+import {CreateEventDto} from './dto/event/create-event.dto';
 import {lastValueFrom} from 'rxjs';
 import {
     ApiBearerAuth,
@@ -18,8 +18,10 @@ import {
     ApiResponse,
     ApiBody, ApiQuery, ApiParam,
 } from '@nestjs/swagger';
-import {FindEventQueryDto} from "./dto/find-event.query.dto";
-import {UpdateEventDto} from "./dto/update-event.dto";
+import {FindEventQueryDto} from "./dto/event/find-event.query.dto";
+import {UpdateEventDto} from "./dto/event/update-event.dto";
+import {CreateRewardTypeDto} from "./dto/reward/create-reward-type.dto";
+import {UpdateRewardTypeDto} from "./dto/reward/update-reward-type.dto";
 
 @ApiTags('Event')
 @ApiBearerAuth()
@@ -90,8 +92,8 @@ export class EventController {
     @Get(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('OPERATOR', 'ADMIN')
-    @ApiOperation({ summary: '이벤트 상세 조회' })
-    @ApiParam({ name: 'id', description: '이벤트 ID' })
+    @ApiOperation({summary: '이벤트 상세 조회'})
+    @ApiParam({name: 'id', description: '이벤트 ID'})
     @ApiResponse({
         status: 200,
         description: '이벤트 상세 정보',
@@ -104,8 +106,8 @@ export class EventController {
     @Patch(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('OPERATOR', 'ADMIN')
-    @ApiOperation({ summary: '이벤트 수정' })
-    @ApiParam({ name: 'id', description: '이벤트 ID' })
+    @ApiOperation({summary: '이벤트 수정'})
+    @ApiParam({name: 'id', description: '이벤트 ID'})
     @ApiBody({
         type: UpdateEventDto,
         examples: {
@@ -123,15 +125,15 @@ export class EventController {
         description: '이벤트 수정 성공',
     })
     async update(@Param('id') id: string, @Body() dto: UpdateEventDto) {
-        const res = this.eventClient.send('event_update_by_id', { id, dto });
+        const res = this.eventClient.send('event_update_by_id', {id, dto});
         return await lastValueFrom(res);
     }
 
     @Delete(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('OPERATOR', 'ADMIN')
-    @ApiOperation({ summary: '이벤트 삭제 (OPERATOR, ADMIN)' })
-    @ApiParam({ name: 'id', description: '이벤트 ID' })
+    @ApiOperation({summary: '이벤트 삭제 (OPERATOR, ADMIN)'})
+    @ApiParam({name: 'id', description: '이벤트 ID'})
     @ApiResponse({
         status: 200,
         description: '이벤트 삭제 성공',
@@ -146,4 +148,7 @@ export class EventController {
         const res = this.eventClient.send('event_delete_by_id', id);
         return await lastValueFrom(res);
     }
+
+
+
 }

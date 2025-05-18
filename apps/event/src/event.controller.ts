@@ -1,14 +1,20 @@
 import {Controller} from '@nestjs/common';
 import {MessagePattern, Payload} from "@nestjs/microservices";
-import {CreateEventDto} from "./dto/create-event.dto";
+import {CreateEventDto} from "./dto/event/create-event.dto";
 import {EventService} from "./event.service";
-import {FindEventQueryDto} from "./dto/find-event.query.dto";
-import {UpdateEventDto} from "./dto/update-event.dto";
+import {FindEventQueryDto} from "./dto/event/find-event.query.dto";
+import {UpdateEventDto} from "./dto/event/update-event.dto";
+import {RewardService} from "./reward.service";
+import {CreateRewardTypeDto} from "./dto/reward/create-reward-type.dto";
+import {RewardTypeService} from "./reward-type.service";
+import {UpdateRewardTypeDto} from "./dto/reward/update-reward-type.dto";
 
 @Controller()
 export class EventController {
     constructor(
         private readonly eventService: EventService,
+        private readonly rewardService: RewardService,
+        private readonly  rewardTypeService: RewardTypeService,
     ) {
     }
 
@@ -42,5 +48,29 @@ export class EventController {
         return this.eventService.deleteEvent(id);
     }
 
+    @MessagePattern('reward_type_create')
+    async createRewardType(@Payload() dto: CreateRewardTypeDto) {
+        return this.rewardTypeService.create(dto);
+    }
+
+    @MessagePattern('reward_type_find_all')
+    async findAllRewardType() {
+        return this.rewardTypeService.findAll();
+    }
+
+    @MessagePattern('reward_type_find_by_id')
+    async findRewardTypeById(@Payload() id: string) {
+        return this.rewardTypeService.findById(id);
+    }
+
+    @MessagePattern('reward_type_update_by_id')
+    async updateRewardTypeById(@Payload() payload: { id: string; dto: UpdateRewardTypeDto }) {
+        return this.rewardTypeService.updateById(payload.id, payload.dto);
+    }
+
+    @MessagePattern('reward_type_delete_by_id')
+    async deleteRewardTypeById(@Payload() id: string) {
+        return this.rewardTypeService.deleteById(id);
+    }
 
 }

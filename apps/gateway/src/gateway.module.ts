@@ -4,6 +4,7 @@ import {ClientsModule, Transport} from '@nestjs/microservices';
 import {GatewayController} from "./gateway.controller";
 import {AuthController} from "./auth.controller";
 import {EventController} from "./event.controller";
+import { RewardTypeController } from './reward-type.controller';
 
 @Module({
     imports: [
@@ -40,7 +41,8 @@ import {EventController} from "./event.controller";
     controllers: [
         GatewayController,
         AuthController,
-        EventController
+        EventController,
+        RewardTypeController
     ],
 })
 

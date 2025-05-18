@@ -18,8 +18,8 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import {Request} from 'express';
-import {RegisterUserDto} from './dto/register-user.dto';
-import {LoginDto} from './dto/login.dto';
+import {RegisterUserDto} from './dto/auth/register-user.dto';
+import {LoginDto} from './dto/auth/login.dto';
 import {JwtAuthGuard} from './guards/jwt-auth.guard';
 import {RolesGuard} from "./guards/roles.guard";
 import {Roles} from "./decorators/roles.decorator";

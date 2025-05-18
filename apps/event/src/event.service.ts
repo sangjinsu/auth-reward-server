@@ -1,10 +1,10 @@
 import {Injectable} from '@nestjs/common';
-import {CreateEventDto} from "./dto/create-event.dto";
+import {CreateEventDto} from "./dto/event/create-event.dto";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model, Types} from "mongoose";
 import {EventSetting, EventSettingDocument} from "./schemas/event-setting.schema";
-import {FindEventQueryDto} from "./dto/find-event.query.dto";
-import {UpdateEventDto} from "./dto/update-event.dto";
+import {FindEventQueryDto} from "./dto/event/find-event.query.dto";
+import {UpdateEventDto} from "./dto/event/update-event.dto";
 
 
 @Injectable()

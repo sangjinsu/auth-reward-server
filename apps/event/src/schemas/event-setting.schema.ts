@@ -1,14 +1,14 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
+import {Document, Types} from 'mongoose';
 
 export type EventSettingDocument = EventSetting & Document;
 
-@Schema({ timestamps: true })
+@Schema({timestamps: true})
 export class EventSetting {
-    @Prop({ required: true, type: Number }) // ✅ 명시적 타입 지정
+    @Prop({required: true, type: Number})
     type: number;
 
-    @Prop({ required: true, type: String })
+    @Prop({required: true, type: String})
     title: string;
 
     @Prop({
@@ -25,10 +25,10 @@ export class EventSetting {
         params: Record<string, any>;
     };
 
-    @Prop({ required: true, type: Date }) // ✅ Date 명시
+    @Prop({required: true, type: Date})
     startDate: Date;
 
-    @Prop({ required: true, type: Date })
+    @Prop({required: true, type: Date})
     endDate: Date;
 
     @Prop({
@@ -38,13 +38,13 @@ export class EventSetting {
     })
     status: string;
 
-    @Prop({ type: Types.ObjectId, ref: 'User' })
+    @Prop({type: Types.ObjectId, ref: 'User'})
     createdBy: Types.ObjectId;
 }
 
 export const EventSettingSchema = SchemaFactory.createForClass(EventSetting);
 
-// ✅ 조회 최적화를 위한 인덱스 설정
-EventSettingSchema.index({ type: 1 });
-EventSettingSchema.index({ startDate: 1 });
-EventSettingSchema.index({ endDate: 1 });
+
+EventSettingSchema.index({type: 1});
+EventSettingSchema.index({startDate: 1});
+EventSettingSchema.index({endDate: 1});
