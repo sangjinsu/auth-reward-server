@@ -27,8 +27,8 @@ MongoDB 및 TCP 기반 내부 통신, Docker Compose 기반 배포 환경을 지
 ## 👷 Docker 기반 실행
 
 ```shell
-docker compose down -v --remove-orphans  # (옵션) 모든 컨테이너/볼륨 삭제
-docker compose up --build                # 소스/환경 변경 반영하여 올리기
+docker-compose down -v --remove-orphans  # (옵션) 모든 컨테이너/볼륨 삭제
+docker-compose up --build                # 소스/환경 변경 반영하여 올리기
 ```
 
 🧱 기술 스택
