@@ -301,4 +301,22 @@ export class EventController {
             throw error;
         }
     }
+
+
+    @MessagePattern('reward_request_find_me')
+    async findMy(@Payload() payload: { userId: string }) {
+        return this.rewardService.findMyRewardRequests(payload.userId);
+    }
+
+    @MessagePattern('reward_request_find_all')
+    async findAll(
+        @Payload()
+        filters: {
+            userId?: string;
+            eventId?: string;
+            status?: string;
+        },
+    ) {
+        return this.rewardService.findAllRewardRequests(filters);
+    }
 }

@@ -1,6 +1,6 @@
-import {Body, Controller, Delete, Get, Inject, Param, Patch, Post, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query, Req, UseGuards} from '@nestjs/common';
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
-import {ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {CreateRewardTypeDto} from "../dto/reward/create-reward-type.dto";
 import {lastValueFrom} from "rxjs";
 import {UpdateRewardTypeDto} from "../dto/reward/update-reward-type.dto";
@@ -166,7 +166,7 @@ export class RewardController {
 
     @Post('events/:eventId/rewards/request')
     @UseGuards(JwtAuthGuard, RolesGuardFactory(['USER']))
-    @ApiOperation({ summary: '유저 보상 요청 (조건 충족 시 지급)' })
+    @ApiOperation({ summary: '유저 보상 요청 (조건 충족 시 지급, USER)' })
     @ApiParam({ name: 'eventId', description: '이벤트 ObjectId' })
     @ApiResponse({
         status: 200,
@@ -206,6 +206,58 @@ export class RewardController {
             eventId,
             userId: user._id,
         });
+        return await lastValueFrom(res);
+    }
+
+
+    @Get('rewards-history/me')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['USER']))
+    @ApiOperation({ summary: '내 보상 요청 이력 조회 (USER)' })
+    @ApiBearerAuth()
+    @ApiResponse({
+        status: 200,
+        description: '유저 본인의 보상 요청 목록 반환',
+        schema: {
+            example: [
+                {
+                    eventId: '665fabc123...',
+                    status: 'SUCCESS',
+                    rewardIds: ['665fab123...', '665fab456...'],
+                    requestedAt: '2025-05-21T10:00:00.000Z',
+                    evaluatedAt: '2025-05-21T10:00:01.000Z',
+                },
+            ],
+        },
+    })
+    async getMyRewardRequests(@Req() req: any) {
+        const user = req.user;
+        const res = this.eventClient.send('reward_request_find_me', { userId: user._id });
+        return await lastValueFrom(res);
+    }
+
+    @Get('reward-history')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['OPERATOR', "ADMIN", "AUDITOR"]))
+    @ApiOperation({ summary: '전체 보상 요청 목록 조회 (필터링 가능, OPERATOR, ADMIN, AUDITOR)' })
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'userId', required: false })
+    @ApiQuery({ name: 'eventId', required: false })
+    @ApiQuery({ name: 'status', required: false, enum: ['SUCCESS', 'PENDING', 'FAILED', 'REJECTED'] })
+    @ApiResponse({
+        status: 200,
+        description: '전체 유저 보상 요청 목록 반환',
+        schema: {
+            example: [
+                {
+                    userId: '6644...',
+                    eventId: '665f...',
+                    status: 'SUCCESS',
+                    requestedAt: '2025-05-20T10:00:00Z',
+                },
+            ],
+        },
+    })
+    async getAllRewardRequests(@Query() query: any) {
+        const res = this.eventClient.send('reward_request_find_all', query);
         return await lastValueFrom(res);
     }
 }

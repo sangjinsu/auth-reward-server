@@ -204,4 +204,27 @@ export class RewardService {
         };
     }
 
+    async findMyRewardRequests(userId: string) {
+        return this.rewardRequestModel
+            .find({ userId })
+            .sort({ requestedAt: -1 })
+            .lean();
+    }
+
+    async findAllRewardRequests(filters: {
+        userId?: string;
+        eventId?: string;
+        status?: string;
+    }) {
+        const query: any = {};
+        if (filters.userId) query.userId = filters.userId;
+        if (filters.eventId) query.eventId = filters.eventId;
+        if (filters.status) query.status = filters.status;
+
+        return this.rewardRequestModel
+            .find(query)
+            .sort({ requestedAt: -1 })
+            .lean();
+    }
+
 }
