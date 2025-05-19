@@ -136,6 +136,24 @@ docker compose up --build                # 소스/환경 변경 반영하여 올
 
 ![img_2.png](img_2.png)
 
+## 🚀 배포 확장 고려사항
+
+### ✅ Kubernetes 배포
+- 각 서비스(auth, gateway, event)를 개별 Pod로 구성
+- 내부 통신은 TCP, DNS 기반 서비스명(auth, event) 사용
+- 환경변수는 ConfigMap/Secret으로 관리
+- MongoDB는 StatefulSet 또는 외부 Atlas 사용 가능
+- CI/CD에는 ArgoCD, GitHub Actions 등을 활용해 GitOps 기반 배포 가능
+
+### 🧩 Monorepo vs Polyrepo
+| 항목 | Monorepo        | Polyrepo        |
+| -- | --------------- | --------------- |
+| 구조 | 모든 서비스 1개 리포    | 서비스별 리포 분리      |
+| 장점 | 코드 공유 쉬움, 통합 빌드 | 독립성 높음, 팀 분리 용이 |
+| 단점 | 리포 무거움, 충돌 ↑    | 공통 코드 관리 복잡     |
+| 추천 | 소규모 팀, 초기 개발    | 서비스 확장, 다수 팀 운영 |
+
+
 ---
 🧑‍💻 개발자
 Author: @sangjinsu
