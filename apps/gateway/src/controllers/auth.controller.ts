@@ -6,7 +6,7 @@ import {
     Post,
     Req,
     UseGuards,
-    Param, Inject,
+    Param, Inject, Header,
 } from '@nestjs/common';
 import {ClientProxy} from '@nestjs/microservices';
 import {lastValueFrom} from 'rxjs';
@@ -18,11 +18,10 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import {Request} from 'express';
-import {RegisterUserDto} from './dto/register-user.dto';
-import {LoginDto} from './dto/login.dto';
-import {JwtAuthGuard} from './guards/jwt-auth.guard';
-import {RolesGuard} from "./guards/roles.guard";
-import {Roles} from "./decorators/roles.decorator";
+import {RegisterUserDto} from '../dto/auth/register-user.dto';
+import {LoginDto} from '../dto/auth/login.dto';
+import {JwtAuthGuard} from '../guards/jwt-auth.guard';
+import {RolesGuardFactory} from "../guards/roles.guard";
 
 
 @ApiTags('Auth')
@@ -105,8 +104,7 @@ export class AuthController {
     }
 
     @Patch('users/:id/role')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('ADMIN')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['ADMIN']))
     @ApiOperation({ summary: '유저 역할(Role) 변경 (ADMIN 전용)' })
     @ApiParam({
         name: 'id',
@@ -140,13 +138,16 @@ export class AuthController {
         },
     })
     async updateRole(
-        @Param('id') userId: string,
+        @Req () req: Request & { userId?: any },
+        @Param('id') targetUserId: string,
         @Body() body: { role: string },
     ) {
         const res = this.authClient.send('auth_update_role', {
-            userId,
+            userId: req.userId,
+            targetUserId,
             role: body.role,
         });
+
         return await lastValueFrom(res);
     }
 }

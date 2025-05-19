@@ -1,10 +1,11 @@
 import {Injectable} from '@nestjs/common';
-import {CreateEventDto} from "./dto/create-event.dto";
+import {CreateEventDto} from "../dto/event/create-event.dto";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model, Types} from "mongoose";
-import {EventSetting, EventSettingDocument} from "./schemas/event-setting.schema";
-import {FindEventQueryDto} from "./dto/find-event.query.dto";
-import {UpdateEventDto} from "./dto/update-event.dto";
+import {EventSetting, EventSettingDocument} from "../schemas/event-setting.schema";
+import {FindEventQueryDto} from "../dto/event/find-event.query.dto";
+import {UpdateEventDto} from "../dto/event/update-event.dto";
+import {EventType, EventTypeDocument} from "../schemas/event-type.schema";
 
 
 @Injectable()
@@ -12,15 +13,22 @@ export class EventService {
 
     constructor(
         @InjectModel(EventSetting.name) private eventModel: Model<EventSettingDocument>,
+        @InjectModel(EventType.name) private eventTypeModel: Model<EventTypeDocument>,
     ) {
     }
 
     async createEvent(dto: CreateEventDto) {
+
+        const eventType = await this.eventTypeModel.findOne({type: parseInt(dto.eventType, 10)});
+        if (!eventType) {
+            throw new Error('존재하지 않는 이벤트 타입입니다.');
+        }
+
         const created = await this.eventModel.create({
             ...dto,
             startDate: new Date(dto.startDate),
             endDate: new Date(dto.endDate),
-            createdBy: new Types.ObjectId(dto.createdBy),
+            createdBy: new Types.ObjectId(dto.userId),
         });
 
         return {
@@ -29,7 +37,7 @@ export class EventService {
         };
     }
 
-    async findAll(query: FindEventQueryDto) {
+    async findAllEvent(query: FindEventQueryDto) {
         const filter: any = {};
 
         if (query.type) filter.type = parseInt(query.type, 10);
@@ -44,7 +52,7 @@ export class EventService {
         return events;
     }
 
-    async findById(id: string) {
+    async findEventById(id: string) {
         const event = await this.eventModel.findById(id);
         if (!event) {
             throw new Error('이벤트를 찾을 수 없습니다.');
@@ -88,5 +96,4 @@ export class EventService {
             eventId: deleted._id,
         };
     }
-
 }

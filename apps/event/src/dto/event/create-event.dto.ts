@@ -7,8 +7,8 @@ import {
 } from 'class-validator';
 
 export class CreateEventDto {
-    @IsNumber()
-    type: number;
+    @IsString()
+    eventType: string;
 
     @IsString()
     title: string;
@@ -29,5 +29,5 @@ export class CreateEventDto {
     status: 'Active' | 'NonActive';
 
     @IsString()
-    createdBy: string;
+    userId: string;
 }

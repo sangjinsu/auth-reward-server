@@ -34,6 +34,7 @@ export class JwtAuthGuard implements CanActivate {
             }
 
             request.user = res.user;
+            request.userId = res.user._id
             return true;
         } catch {
             throw new UnauthorizedException('토큰 검증 실패');

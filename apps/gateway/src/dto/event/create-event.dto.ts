@@ -27,7 +27,4 @@ export class CreateEventDto {
 
     @IsIn(['Active', 'NonActive'])
     status: 'Active' | 'NonActive';
-
-    @IsString()
-    createdBy: string;
 }
