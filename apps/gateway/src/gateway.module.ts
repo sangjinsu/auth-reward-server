@@ -6,6 +6,7 @@ import {AuthController} from "./controllers/auth.controller";
 import {EventController} from "./controllers/event.controller";
 import { RewardTypeController } from './controllers/reward-type.controller';
 import {RewardController} from "./controllers/reward.controller";
+import {EventTypeController} from "./controllers/event-type.controller";
 
 @Module({
     imports: [
@@ -42,9 +43,10 @@ import {RewardController} from "./controllers/reward.controller";
     controllers: [
         GatewayController,
         AuthController,
+        EventTypeController,
         EventController,
         RewardTypeController,
-        RewardController
+        RewardController,
     ],
 })
 

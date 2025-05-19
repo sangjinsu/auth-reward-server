@@ -7,8 +7,8 @@ import {
 } from 'class-validator';
 
 export class CreateEventDto {
-    @IsNumber()
-    type: number;
+    @IsString()
+    eventType: string;
 
     @IsString()
     title: string;

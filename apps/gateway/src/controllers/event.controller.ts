@@ -41,7 +41,7 @@ export class EventController {
             default: {
                 summary: '이벤트 생성 예시',
                 value: {
-                    type: 1001,
+                    eventType: 1001,
                     title: '출석 이벤트',
                     condition: {
                         type: 'attendance',

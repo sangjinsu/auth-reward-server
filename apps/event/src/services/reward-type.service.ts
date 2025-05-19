@@ -1,9 +1,9 @@
 import {ConflictException, Injectable, NotFoundException} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
-import {RewardType, RewardTypeDocument} from "./schemas/reward-type.schema";
+import {RewardType, RewardTypeDocument} from "../schemas/reward-type.schema";
 import {Model} from "mongoose";
-import {CreateRewardTypeDto} from "./dto/reward/create-reward-type.dto";
-import {UpdateRewardTypeDto} from "./dto/reward/update-reward-type.dto";
+import {CreateRewardTypeDto} from "../dto/reward/create-reward-type.dto";
+import {UpdateRewardTypeDto} from "../dto/reward/update-reward-type.dto";
 
 @Injectable()
 export class RewardTypeService {

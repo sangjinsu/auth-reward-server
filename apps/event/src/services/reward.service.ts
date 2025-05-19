@@ -1,11 +1,11 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
-import {CreateRewardDto} from "./dto/reward/create-reward.dto";
+import {CreateRewardDto} from "../dto/reward/create-reward.dto";
 import {InjectModel} from "@nestjs/mongoose";
-import {Reward, RewardDocument} from "./schemas/reward.schema";
+import {Reward, RewardDocument} from "../schemas/reward.schema";
 import {Model} from "mongoose";
-import {EventSetting, EventSettingDocument} from "./schemas/event-setting.schema";
-import {RewardType, RewardTypeDocument} from "./schemas/reward-type.schema";
-import {UpdateRewardDto} from "./dto/reward/update-reward.dto";
+import {EventSetting, EventSettingDocument} from "../schemas/event-setting.schema";
+import {RewardType, RewardTypeDocument} from "../schemas/reward-type.schema";
+import {UpdateRewardDto} from "../dto/reward/update-reward.dto";
 
 @Injectable()
 export class RewardService {
@@ -72,5 +72,4 @@ export class RewardService {
 
         return {message: '보상이 삭제되었습니다.', id: deleted._id};
     }
-
 }

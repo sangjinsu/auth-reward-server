@@ -1,14 +1,14 @@
-import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {Document, Types} from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
 
 export type EventSettingDocument = EventSetting & Document;
 
-@Schema({timestamps: true})
+@Schema({ timestamps: true })
 export class EventSetting {
-    @Prop({required: true, type: Number})
-    type: number;
+    @Prop({ required: true, type: Types.ObjectId, ref: 'EventType' })
+    eventType: Types.ObjectId;
 
-    @Prop({required: true, type: String})
+    @Prop({ required: true, type: String })
     title: string;
 
     @Prop({
@@ -25,10 +25,10 @@ export class EventSetting {
         params: Record<string, any>;
     };
 
-    @Prop({required: true, type: Date})
+    @Prop({ required: true, type: Date })
     startDate: Date;
 
-    @Prop({required: true, type: Date})
+    @Prop({ required: true, type: Date })
     endDate: Date;
 
     @Prop({
@@ -38,13 +38,12 @@ export class EventSetting {
     })
     status: string;
 
-    @Prop({type: Types.ObjectId, ref: 'User'})
+    @Prop({ type: Types.ObjectId, ref: 'User' })
     createdBy: Types.ObjectId;
 }
 
 export const EventSettingSchema = SchemaFactory.createForClass(EventSetting);
 
-
-EventSettingSchema.index({type: 1});
-EventSettingSchema.index({startDate: 1});
-EventSettingSchema.index({endDate: 1});
+EventSettingSchema.index({ eventType: 1 });
+EventSettingSchema.index({ startDate: 1 });
+EventSettingSchema.index({ endDate: 1 });
