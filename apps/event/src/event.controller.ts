@@ -11,18 +11,24 @@ import {InjectModel} from "@nestjs/mongoose";
 import {RewardType, RewardTypeDocument} from "./schemas/reward-type.schema";
 import {EventSetting, EventSettingDocument} from "./schemas/event-setting.schema";
 import {Model} from "mongoose";
+import {CreateRewardDto} from "./dto/reward/create-reward.dto";
+import {Reward, RewardDocument} from "./schemas/reward.schema";
+import {RewardService} from "./reward.service";
+import {UpdateRewardDto} from "./dto/reward/update-reward.dto";
 
 @Controller()
 export class EventController {
     constructor(
         private readonly eventService: EventService,
-        private readonly  rewardTypeService: RewardTypeService,
-
+        private readonly rewardTypeService: RewardTypeService,
+        private readonly rewardService: RewardService,
         @InjectModel(EventSetting.name) private eventModel: Model<EventSettingDocument>,
         @InjectModel(RewardType.name) private rewardTypeModel: Model<RewardTypeDocument>,
+        @InjectModel(Reward.name) private rewardModel: Model<RewardDocument>,
     ) {
         this.eventService = new EventService(this.eventModel);
         this.rewardTypeService = new RewardTypeService(this.rewardTypeModel);
+        this.rewardService = new RewardService(this.rewardModel, this.eventModel, this.rewardTypeModel);
     }
 
     @MessagePattern('event_ping')
@@ -31,24 +37,24 @@ export class EventController {
     }
 
     @MessagePattern('event_create')
-    async create(@Payload() dto: CreateEventDto) {
+    async createEvent(@Payload() dto: CreateEventDto) {
         try {
             return this.eventService.createEvent(dto);
         } catch (error) {
             if (error instanceof NotFoundException) {
-                return { error: '존재하지 않는 이벤트입니다.' };
+                return {error: '존재하지 않는 이벤트입니다.'};
             }
             throw error;
         }
     }
 
     @MessagePattern('event_find_all')
-    async findAll(@Payload() query: FindEventQueryDto) {
+    async findAllEvent(@Payload() query: FindEventQueryDto) {
         try {
             return this.eventService.findAll(query);
         } catch (error) {
             if (error instanceof NotFoundException) {
-                return { error: '존재하지 않는 이벤트입니다.' };
+                return {error: '존재하지 않는 이벤트입니다.'};
             }
             throw error;
         }
@@ -60,31 +66,31 @@ export class EventController {
             return this.eventService.findById(id);
         } catch (error) {
             if (error instanceof NotFoundException) {
-                return { error: '존재하지 않는 이벤트입니다.' };
+                return {error: '존재하지 않는 이벤트입니다.'};
             }
             throw error;
         }
     }
 
     @MessagePattern('event_update_by_id')
-    async updateById(@Payload() data: { id: string; dto: UpdateEventDto }) {
+    async updateEventById(@Payload() data: { id: string; dto: UpdateEventDto }) {
         try {
             return this.eventService.updateEvent(data.id, data.dto);
         } catch (error) {
             if (error instanceof NotFoundException) {
-                return { error: '존재하지 않는 이벤트입니다.' };
+                return {error: '존재하지 않는 이벤트입니다.'};
             }
             throw error;
         }
     }
 
     @MessagePattern('event_delete_by_id')
-    async deleteById(@Payload() id: string) {
+    async deleteEventById(@Payload() id: string) {
         try {
             return this.eventService.deleteEvent(id);
         } catch (error) {
             if (error instanceof NotFoundException) {
-                return { error: '존재하지 않는 이벤트입니다.' };
+                return {error: '존재하지 않는 이벤트입니다.'};
             }
             throw error;
         }
@@ -96,7 +102,7 @@ export class EventController {
             return this.rewardTypeService.create(dto);
         } catch (error) {
             if (error instanceof NotFoundException) {
-                return { error: '존재하지 않는 RewardType입니다.' };
+                return {error: '존재하지 않는 RewardType입니다.'};
             }
             throw error;
         }
@@ -108,7 +114,7 @@ export class EventController {
             return this.rewardTypeService.findAll();
         } catch (error) {
             if (error instanceof NotFoundException) {
-                return { error: '존재하지 않는 RewardType입니다.' };
+                return {error: '존재하지 않는 RewardType입니다.'};
             }
             throw error;
         }
@@ -120,7 +126,7 @@ export class EventController {
             return this.rewardTypeService.findByRewardType(rewardType);
         } catch (error) {
             if (error instanceof NotFoundException) {
-                return { error: '존재하지 않는 RewardType입니다.' };
+                return {error: '존재하지 않는 RewardType입니다.'};
             }
             throw error;
         }
@@ -132,7 +138,7 @@ export class EventController {
             return this.rewardTypeService.updateById(payload.id, payload.dto);
         } catch (error) {
             if (error instanceof NotFoundException) {
-                return { error: '존재하지 않는 RewardType입니다.' };
+                return {error: '존재하지 않는 RewardType입니다.'};
             }
             throw error;
         }
@@ -140,14 +146,49 @@ export class EventController {
 
     @MessagePattern('reward_type_delete_by_id')
     async deleteRewardTypeById(@Payload() id: string) {
-       try {
-           return this.rewardTypeService.deleteById(id);
-       } catch (error) {
-              if (error instanceof NotFoundException) {
-                return { error: '존재하지 않는 RewardType입니다.' };
-              }
-              throw error;
-       }
+        try {
+            return this.rewardTypeService.deleteById(id);
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                return {error: '존재하지 않는 RewardType입니다.'};
+            }
+            throw error;
+        }
     }
 
+    @MessagePattern('reward_create')
+    createReward(@Payload() data: { eventId: string; dto: CreateRewardDto }) {
+        try {
+            return this.rewardService.createReward(data.eventId, data.dto);
+        } catch (error) {
+
+            throw error;
+        }
+    }
+
+
+    @MessagePattern('reward_find_by_event')
+    findByEvent(@Payload() eventId: string) {
+        return this.rewardService.findByEvent(eventId);
+    }
+
+    @MessagePattern('reward_find_by_id')
+    findRewardById(@Payload() id: string) {
+        return this.rewardService.findById(id);
+    }
+
+    @MessagePattern('reward_find_all')
+    findAllReward() {
+        return this.rewardService.findAll();
+    }
+
+    @MessagePattern('reward_update_by_id')
+    updateReward(@Payload() data: { id: string; dto: UpdateRewardDto }) {
+        return this.rewardService.updateById(data.id, data.dto);
+    }
+
+    @MessagePattern('reward_delete_by_id')
+    deleteReward(@Payload() id: string) {
+        return this.rewardService.deleteById(id);
+    }
 }

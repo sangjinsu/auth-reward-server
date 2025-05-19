@@ -1,7 +1,7 @@
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {Types} from "mongoose";
 
-@Schema({ timestamps: false })
+@Schema({ timestamps: true })
 export class RewardRequest {
     @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
     userId: Types.ObjectId;
@@ -27,10 +27,10 @@ export class RewardRequest {
     requestedAt: Date;
 
     @Prop({ type: Date })
-    createdAt: Date;
+    readonly createdAt: Date;
 
     @Prop({ type: Date })
-    updatedAt: Date;
+    readonly updatedAt: Date;
 }
 
 export type RewardRequestDocument = RewardRequest & Document;

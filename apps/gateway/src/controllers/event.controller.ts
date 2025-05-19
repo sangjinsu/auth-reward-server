@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import {ClientProxy} from '@nestjs/microservices';
 import {Inject} from '@nestjs/common';
-import {JwtAuthGuard} from './guards/jwt-auth.guard';
-import {CreateEventDto} from './dto/event/create-event.dto';
+import {JwtAuthGuard} from '../guards/jwt-auth.guard';
+import {CreateEventDto} from '../dto/event/create-event.dto';
 import {lastValueFrom} from 'rxjs';
 import {
     ApiBearerAuth,
@@ -16,11 +16,11 @@ import {
     ApiResponse,
     ApiBody, ApiQuery, ApiParam,
 } from '@nestjs/swagger';
-import {FindEventQueryDto} from "./dto/event/find-event.query.dto";
-import {UpdateEventDto} from "./dto/event/update-event.dto";
-import {CreateRewardTypeDto} from "./dto/reward/create-reward-type.dto";
-import {UpdateRewardTypeDto} from "./dto/reward/update-reward-type.dto";
-import {RolesGuardFactory} from "./guards/roles.guard";
+import {FindEventQueryDto} from "../dto/event/find-event.query.dto";
+import {UpdateEventDto} from "../dto/event/update-event.dto";
+import {CreateRewardTypeDto} from "../dto/reward/create-reward-type.dto";
+import {UpdateRewardTypeDto} from "../dto/reward/update-reward-type.dto";
+import {RolesGuardFactory} from "../guards/roles.guard";
 import {Request} from "express";
 
 @ApiTags('Event')
@@ -148,6 +148,4 @@ export class EventController {
         const res = this.eventClient.send('event_delete_by_id', id);
         return await lastValueFrom(res);
     }
-
-
 }

@@ -1,11 +1,11 @@
 import {Body, Controller, Delete, Get, Inject, Param, Patch, Post, UseGuards} from '@nestjs/common';
-import {JwtAuthGuard} from "./guards/jwt-auth.guard";
+import {JwtAuthGuard} from "../guards/jwt-auth.guard";
 import {ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {CreateRewardTypeDto} from "./dto/reward/create-reward-type.dto";
+import {CreateRewardTypeDto} from "../dto/reward/create-reward-type.dto";
 import {lastValueFrom} from "rxjs";
-import {UpdateRewardTypeDto} from "./dto/reward/update-reward-type.dto";
+import {UpdateRewardTypeDto} from "../dto/reward/update-reward-type.dto";
 import {ClientProxy} from "@nestjs/microservices";
-import {RolesGuardFactory} from "./guards/roles.guard";
+import {RolesGuardFactory} from "../guards/roles.guard";
 
 @ApiTags('RewardType')
 @ApiBearerAuth()

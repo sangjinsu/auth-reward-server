@@ -1,10 +1,11 @@
 import {Module} from '@nestjs/common';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import {ClientsModule, Transport} from '@nestjs/microservices';
-import {GatewayController} from "./gateway.controller";
-import {AuthController} from "./auth.controller";
-import {EventController} from "./event.controller";
-import { RewardTypeController } from './reward-type.controller';
+import {GatewayController} from "./controllers/gateway.controller";
+import {AuthController} from "./controllers/auth.controller";
+import {EventController} from "./controllers/event.controller";
+import { RewardTypeController } from './controllers/reward-type.controller';
+import {RewardController} from "./controllers/reward.controller";
 
 @Module({
     imports: [
@@ -42,7 +43,8 @@ import { RewardTypeController } from './reward-type.controller';
         GatewayController,
         AuthController,
         EventController,
-        RewardTypeController
+        RewardTypeController,
+        RewardController
     ],
 })
 
