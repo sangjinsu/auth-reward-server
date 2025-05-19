@@ -42,6 +42,8 @@ export class AuthService {
             throw new UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다.');
         }
 
+        await this.userModel.findByIdAndUpdate(user._id, {lastLoginAt: new Date()});
+
         const payload = {
             sub: user._id.toString(),
             email: user.email,

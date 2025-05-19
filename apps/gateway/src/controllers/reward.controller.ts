@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Inject, Param, Patch, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, Patch, Post, Req, UseGuards} from '@nestjs/common';
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
 import {ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {CreateRewardTypeDto} from "../dto/reward/create-reward-type.dto";
@@ -160,6 +160,52 @@ export class RewardController {
     })
     async deleteReward(@Param('id') id: string) {
         const res = this.eventClient.send('reward_delete_by_id', id);
+        return await lastValueFrom(res);
+    }
+
+
+    @Post('events/:eventId/rewards/request')
+    @UseGuards(JwtAuthGuard, RolesGuardFactory(['USER']))
+    @ApiOperation({ summary: '유저 보상 요청 (조건 충족 시 지급)' })
+    @ApiParam({ name: 'eventId', description: '이벤트 ObjectId' })
+    @ApiResponse({
+        status: 200,
+        description: '보상 요청 및 지급 성공',
+        schema: {
+            example: {
+                message: '보상이 성공적으로 지급되었습니다.',
+                requestId: '665ffabc1234567890123456',
+                rewards: [
+                    {
+                        _id: '665fab9876...',
+                        rewardType: 1,
+                        quantity: 100,
+                        metadata: {
+                            name: '100포인트',
+                            code: 'POINT100',
+                        },
+                    },
+                ],
+            },
+        },
+    })
+    @ApiResponse({
+        status: 400,
+        description: '조건 미충족 또는 중복 요청 등',
+        schema: {
+            example: {
+                statusCode: 400,
+                message: '보상 조건을 충족하지 않았습니다.',
+                error: 'Bad Request',
+            },
+        },
+    })
+    async requestReward(@Param('eventId') eventId: string, @Req() req: any) {
+        const user = req.user;
+        const res = this.eventClient.send('reward_request_create', {
+            eventId,
+            userId: user._id,
+        });
         return await lastValueFrom(res);
     }
 }

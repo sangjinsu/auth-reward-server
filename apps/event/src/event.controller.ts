@@ -19,23 +19,52 @@ import {EventTypeService} from "./services/event-type.service";
 import {EventType, EventTypeDocument} from "./schemas/event-type.schema";
 import {CreateEventTypeDto} from "./dto/event/create-event-type.dto";
 import {UpdateEventTypeDto} from "./dto/event/update-event-type.dto";
+import {RewardRequest, RewardRequestDocument} from "./schemas/reward-request.schema";
+import {RewardConditionEvaluator} from "./evaluator/reward-condition-evaluator";
+import {UserService} from "./services/user.service";
+import {Attendance, AttendanceDocument} from "./schemas/attendance.schema";
+import {User, UserDocument} from "./schemas/user.schema";
+import {AttendanceStrategy} from "./strategy/attendance.strategy";
+import {NRUStrategy} from "./strategy/nru.strategy";
+import {CBUStrategy} from "./strategy/cbu.strategy";
 
 @Controller()
 export class EventController {
     constructor(
-        private readonly eventTypeService : EventTypeService,
+        private readonly eventTypeService: EventTypeService,
         private readonly eventService: EventService,
         private readonly rewardTypeService: RewardTypeService,
         private readonly rewardService: RewardService,
+        private readonly userService: UserService,
         @InjectModel(EventType.name) private eventTypeModel: Model<EventTypeDocument>,
         @InjectModel(EventSetting.name) private eventModel: Model<EventSettingDocument>,
         @InjectModel(RewardType.name) private rewardTypeModel: Model<RewardTypeDocument>,
         @InjectModel(Reward.name) private rewardModel: Model<RewardDocument>,
+        @InjectModel(RewardRequest.name) private rewardRequestModel: Model<RewardRequestDocument>,
+        @InjectModel(Attendance.name) private attendanceModel: Model<AttendanceDocument>,
+        @InjectModel(User.name) private userModel: Model<UserDocument>
     ) {
-        this.eventTypeService = new EventTypeService(this.eventTypeModel),
+        this.eventTypeService = new EventTypeService(this.eventTypeModel);
         this.eventService = new EventService(this.eventModel, this.eventTypeModel);
         this.rewardTypeService = new RewardTypeService(this.rewardTypeModel);
-        this.rewardService = new RewardService(this.rewardModel, this.eventModel, this.rewardTypeModel);
+        this.userService = new UserService(this.userModel, this.attendanceModel)
+
+        const attendanceStrategy = new AttendanceStrategy(this.userService)
+        const nruStrategy = new NRUStrategy(this.userService)
+        const cbuStrategy = new CBUStrategy(this.userService)
+
+        this.rewardService = new RewardService(
+            this.rewardModel,
+            this.eventModel,
+            this.rewardTypeModel,
+            this.eventTypeModel,
+            this.rewardRequestModel,
+            new RewardConditionEvaluator(
+                attendanceStrategy,
+                nruStrategy,
+                cbuStrategy
+            )
+        )
     }
 
     @MessagePattern('event_ping')
@@ -259,6 +288,15 @@ export class EventController {
     deleteEventType(@Payload() id: string) {
         try {
             return this.eventTypeService.deleteById(id);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    @MessagePattern('reward_request')
+    requestReward(@Payload() data: { eventId: string; userId: string }) {
+        try {
+            return this.rewardService.requestReward(data.eventId, data.userId);
         } catch (error) {
             throw error;
         }
