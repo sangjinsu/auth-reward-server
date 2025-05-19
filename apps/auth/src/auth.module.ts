@@ -11,13 +11,8 @@ import {JwtService} from "./jwt.service";
 
 @Module({
     imports: [
-        MongooseModule.forRootAsync({
-            imports: [ConfigModule],
-            useFactory: (config: ConfigService) => ({
-                uri: config.get<string>('MONGO_URI'),
-            }),
-            inject: [ConfigService],
-        }),
+        ConfigModule.forRoot(),
+        MongooseModule.forRoot(process.env.MONGO_URI),
         MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
     ],
     controllers: [AuthController],

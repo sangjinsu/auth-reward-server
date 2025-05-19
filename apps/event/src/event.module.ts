@@ -23,13 +23,8 @@ import {UserService} from "./services/user.service";
 
 @Module({
     imports: [
-        MongooseModule.forRootAsync({
-            imports: [ConfigModule],
-            useFactory: (config: ConfigService) => ({
-                uri: config.get<string>('MONGO_URI'),
-            }),
-            inject: [ConfigService],
-        }),
+        ConfigModule.forRoot(),
+        MongooseModule.forRoot(process.env.MONGO_URI),
         MongooseModule.forFeature([
             {name: EventType.name, schema: EventTypeSchema},
             {name: EventSetting.name, schema: EventSettingSchema},

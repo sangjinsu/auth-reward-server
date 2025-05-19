@@ -3,6 +3,9 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "build": "npm run clean && nest build gateway && nest build auth && nest build event",
+    "build:gateway": "npm run clean && nest build gateway",
+    "build:auth": "npm run clean && nest build auth",
+    "build:event": "npm run clean && nest build event",
     "start:dev:gateway": "nest start gateway --watch",
     "start:dev:auth": "nest start auth --watch",
     "start:dev:event": "nest start event --watch",
@@ -32,6 +35,7 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
+    "@nestjs/cli": "^10.4.9",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",
