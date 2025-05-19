@@ -10,16 +10,25 @@ import {ConfigService} from "@nestjs/config";
 export class JwtService {
     private readonly secret: string;
     private readonly expiresIn: string;
+    private readonly refreshExpiresIn: string
 
     constructor() {
         const configService = new ConfigService();
         this.secret = configService.get<string>('JWT_SECRET')
         this.expiresIn = configService.get<string>('JWT_EXPIRES_IN')
+        this.refreshExpiresIn = configService.get<string>('JWT_REFRESH_EXPIRES_IN')
     }
 
     sign(payload: object): string {
         const options: jwt.SignOptions = {
             expiresIn: this.parseExpiration(this.expiresIn),
+        }
+        return jwt.sign(payload, this.secret, options);
+    }
+
+    refresh(payload: object): string {
+        const options: jwt.SignOptions = {
+            expiresIn: this.parseExpiration(this.refreshExpiresIn),
         }
         return jwt.sign(payload, this.secret, options);
     }

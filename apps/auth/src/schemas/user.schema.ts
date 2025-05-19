@@ -19,6 +19,9 @@ export class User {
     })
     role: 'USER' | 'OPERATOR' | 'AUDITOR' | 'ADMIN';
 
+    @Prop({type: String})
+    refreshToken?: string;
+
     @Prop({type: Date})
     lastLoginAt: Date;
 

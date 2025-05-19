@@ -46,6 +46,30 @@ export class AuthController {
         }
     }
 
+    @MessagePattern('auth_refresh')
+    async refresh(@Payload() data: { userId: string }) {
+        try {
+            return await this.authService.refresh(data.userId);
+        } catch (error) {
+            if (error instanceof ConflictException) {
+                return { error: '유효하지 않은 토큰입니다.' };
+            }
+            throw error;
+        }
+    }
+
+    @MessagePattern('auth_logout')
+    async logout(@Payload() data: { userId: string }) {
+        try {
+            return await this.authService.logout(data.userId);
+        } catch (error) {
+            if (error instanceof ConflictException) {
+                return { error: '유효하지 않은 토큰입니다.' };
+            }
+            throw error;
+        }
+    }
+
     @MessagePattern('auth_validate')
     async validate(@Payload() data: { token: string }) {
         try {

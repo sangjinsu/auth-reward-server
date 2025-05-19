@@ -6,7 +6,7 @@ import {
     Post,
     Req,
     UseGuards,
-    Param, Inject, Header,
+    Param, Inject, Res, UnauthorizedException,
 } from '@nestjs/common';
 import {ClientProxy} from '@nestjs/microservices';
 import {lastValueFrom} from 'rxjs';
@@ -22,6 +22,7 @@ import {RegisterUserDto} from '../dto/auth/register-user.dto';
 import {LoginDto} from '../dto/auth/login.dto';
 import {JwtAuthGuard} from '../guards/jwt-auth.guard';
 import {RolesGuardFactory} from "../guards/roles.guard";
+import {Response} from 'express';
 
 
 @ApiTags('Auth')
@@ -70,16 +71,67 @@ export class AuthController {
     })
     @ApiResponse({
         status: 200,
+        description: '로그인 성공',
         schema: {
             example: {
-                access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                accessToken: 'eyJhbGci...',
+                refreshToken: 'eyJhbGci...',
             },
         },
     })
     async login(@Body() dto: LoginDto) {
-        const res = this.authClient.send('auth_login', dto);
-        return await lastValueFrom(res);
+        return await lastValueFrom(this.authClient.send('auth_login', dto));
     }
+
+    @Post('refresh')
+    @UseGuards(JwtAuthGuard)
+    @ApiOperation({summary: 'Access Token 기반으로 Refresh 수행'})
+    @ApiResponse({
+        status: 200,
+        description: '재발급 성공',
+        schema: {
+            example: {
+                message: '토큰 재발급 완료',
+                accessToken: 'new_access_token_here',
+            },
+        },
+    })
+    async refresh(@Req() req: Request & { userId?: any }) {
+
+        const result = await lastValueFrom(
+            this.authClient.send('auth_refresh', {
+                userId: req.userId
+            }),
+        );
+
+        return {
+            message: '토큰 재발급 완료',
+            accessToken: result.accessToken,
+        };
+    }
+
+    @Post('logout')
+    @ApiOperation({summary: '로그아웃 (Refresh Token 무효화)'})
+    @UseGuards(JwtAuthGuard)
+    @ApiResponse({
+        status: 200,
+        description: '로그아웃 성공',
+        schema: {
+            example: {message: '로그아웃 완료'},
+        },
+    })
+    async logout(@Req() req: Request & { userId?: any }) {
+        const result = await lastValueFrom(
+            this.authClient.send('auth_logout', {
+                userId: req.userId
+            }),
+        );
+
+        return {
+            message: result?.message || '로그아웃 완료',
+        };
+    }
+
 
     @Get('me')
     @UseGuards(JwtAuthGuard)
@@ -105,7 +157,7 @@ export class AuthController {
 
     @Patch('users/:id/role')
     @UseGuards(JwtAuthGuard, RolesGuardFactory(['ADMIN']))
-    @ApiOperation({ summary: '유저 역할(Role) 변경 (ADMIN 전용)' })
+    @ApiOperation({summary: '유저 역할(Role) 변경 (ADMIN 전용)'})
     @ApiParam({
         name: 'id',
         description: '유저 ID',
@@ -138,7 +190,7 @@ export class AuthController {
         },
     })
     async updateRole(
-        @Req () req: Request & { userId?: any },
+        @Req() req: Request & { userId?: any },
         @Param('id') targetUserId: string,
         @Body() body: { role: string },
     ) {

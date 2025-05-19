@@ -11,7 +11,7 @@ import {JwtService} from './jwt.service';
 export class AuthService {
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
-        private readonly JwtService: JwtService,
+        private readonly jwtService: JwtService,
     ) {
     }
 
@@ -50,12 +50,46 @@ export class AuthService {
             role: user.role,
         };
 
-        const token = this.JwtService.sign(payload);
+        const token = this.jwtService.sign(payload);
+        const refreshToken = this.jwtService.refresh(payload)
+
+        await this.userModel.findByIdAndUpdate(user._id, {refreshToken: refreshToken});
 
         return {
+            success: true,
             access_token: token,
         };
     }
+
+
+    async refresh(userId: string) {
+
+        const user = await this.userModel.findById(userId);
+        if (!user || !user.refreshToken) {
+            throw new UnauthorizedException('유저 정보 또는 refresh token 없음');
+        }
+
+        try {
+            this.jwtService.verify(user.refreshToken); // refreshToken 만료 검증
+        } catch {
+            throw new UnauthorizedException('Refresh token 만료됨');
+        }
+
+        const newAccessToken = this.jwtService.sign(
+            {sub: user._id.toString(), email: user.email, role: user.role},
+        );
+
+        return {
+            accessToken: newAccessToken,
+        };
+    }
+
+
+    async logout(userId: string) {
+        await this.userModel.findByIdAndUpdate(userId, {refreshToken: null});
+        return {message: '로그아웃 성공'};
+    }
+
 
     async updateUserRole(userId: string, targetUserId: string, newRole: string) {
 
@@ -85,7 +119,7 @@ export class AuthService {
 
     async validateToken(token: string) {
         try {
-            const payload = await this.JwtService.verify(token);
+            const payload = await this.jwtService.verify(token);
             return {valid: true, user: payload};
         } catch {
             return {valid: false};

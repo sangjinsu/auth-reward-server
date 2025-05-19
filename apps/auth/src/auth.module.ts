@@ -14,7 +14,7 @@ import {JwtService} from "./jwt.service";
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: (config: ConfigService) => ({
-                uri: config.get<string>('MONGO_AUTH_URI'),
+                uri: config.get<string>('MONGO_URI'),
             }),
             inject: [ConfigService],
         }),
