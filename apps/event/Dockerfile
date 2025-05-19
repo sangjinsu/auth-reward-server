@@ -12,5 +12,5 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY package*.json ./
 RUN npm install --omit=dev
-COPY .env .env
+COPY .env.example .env
 CMD ["node", "dist/apps/event/main.js"]
